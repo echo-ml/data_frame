@@ -9,13 +9,16 @@ namespace data_frame {
 //------------------------------------------------------------------------------
 // HomogenousDataFrame
 //------------------------------------------------------------------------------
-template <class T, class ColumnTags, class Allocator>
+template <class T, class ColumnTags, class Allocator = std::allocator<T>>
 class HomogenousDataFrame {
   static_assert(!std::is_same<T, T>::value, "invalid column tags");
 };
 
 template <class T, class... ColumnTags, class Allocator>
-class HomogenousDataFrame<T, htl::Tuple<ColumnTags...>, Allocator> {
+class HomogenousDataFrame<T, htl::Tuple<ColumnTags...>, Allocator>
+    : public HomogenousDataFrameAccessor<
+          HomogenousDataFrame<T, htl::Tuple<ColumnTags...>, Allocator>,
+          htl::Tuple<ColumnTags...>> {
   using NumColumns = StaticIndex<sizeof...(ColumnTags)>;
 
  public:
