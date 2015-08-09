@@ -1,5 +1,6 @@
 #pragma once
 
+#include <echo/data_frame/homogenous_data_frame_fwd.h>
 #include <echo/data_frame/homogenous_data_frame_accessor.h>
 #include <echo/k_array.h>
 
@@ -9,11 +10,6 @@ namespace data_frame {
 //------------------------------------------------------------------------------
 // HomogenousDataFrame
 //------------------------------------------------------------------------------
-template <class T, class ColumnTags, class Allocator = std::allocator<T>>
-class HomogenousDataFrame {
-  static_assert(!std::is_same<T, T>::value, "invalid column tags");
-};
-
 template <class T, class... ColumnTags, class Allocator>
 class HomogenousDataFrame<T, htl::Tuple<ColumnTags...>, Allocator>
     : public HomogenousDataFrameAccessor<
@@ -23,13 +19,15 @@ class HomogenousDataFrame<T, htl::Tuple<ColumnTags...>, Allocator>
 
  public:
   using column_tags = htl::Tuple<ColumnTags...>;
-  HomogenousDataFrame(index_t num_rows,
-                      const Allocator& allocator = Allocator())
+  using memory_backend_tag =
+      memory_backend_traits::memory_backend_tag<Allocator>;
+  explicit HomogenousDataFrame(index_t num_rows,
+                               const Allocator& allocator = Allocator())
       : _k_array(make_shape(num_rows, NumColumns()), allocator) {}
   const auto& shape() const { return _k_array.shape(); }
-  T* data() { return _k_array.data(); }
-  const T* data() const { return _k_array.data(); }
-  const T* const_data() const { return _k_array.data(); }
+  auto data() { return _k_array.data(); }
+  auto data() const { return _k_array.data(); }
+  auto const_data() const { return _k_array.data(); }
 
   const auto& k_array() const { return _k_array; }
   auto& k_array() { return _k_array; }
@@ -37,5 +35,12 @@ class HomogenousDataFrame<T, htl::Tuple<ColumnTags...>, Allocator>
  private:
   KArray<T, Shape<index_t, NumColumns>, Allocator> _k_array;
 };
+
+//------------------------------------------------------------------------------
+// NumericDataFrame
+//------------------------------------------------------------------------------
+template <class T, class ColumnTags>
+using NumericDataFrame =
+    HomogenousDataFrame<T, ColumnTags, memory::SimdAllocator<T>>;
 }
 }
