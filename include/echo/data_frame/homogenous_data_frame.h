@@ -32,6 +32,11 @@ class HomogenousDataFrame<T, htl::Tuple<ColumnTags...>, Allocator>
   const auto& k_array() const { return _k_array; }
   auto& k_array() { return _k_array; }
 
+  auto& operator=(InitializerMultilist<T, 2> values) {
+    _k_array = values;
+    return *this;
+  }
+
  private:
   KArray<T, Shape<index_t, NumColumns>, Allocator> _k_array;
 };

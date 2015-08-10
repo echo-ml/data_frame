@@ -25,10 +25,19 @@ class HomogenousDataFrameView<Pointer, Shape, htl::Tuple<ColumnTags...>,
   using memory_backend_tag = MemoryBackendTag;
   HomogenousDataFrameView(Pointer data, const Shape& shape)
       : _k_array(data, shape) {}
+  const auto& shape() const { return _k_array.shape(); }
+
   auto data() const { return _k_array.data(); }
   auto const_data() const { return _k_array.const_data(); }
+
   const auto& k_array() const { return _k_array; }
-  const auto& shape() const { return _k_array.shape(); }
+
+  const auto& operator=(
+      InitializerMultilist<iterator_traits::value_type<Pointer>, 2> values)
+      const {
+    _k_array = values;
+    return *this;
+  }
 
  private:
   KArrayView<Pointer, Shape, MemoryBackendTag> _k_array;
