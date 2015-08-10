@@ -10,6 +10,7 @@
 namespace echo { 
 
 using data_frame::HomogenousDataFrame;
+using data_frame::NumericDataFrame;
 using data_frame::make_subdata_frame;
 
 }
