@@ -72,8 +72,8 @@ struct HomogenousDataFrameShape : Concept {
   template <class ColumnTags, class Shape>
   auto require(ColumnTags&&, Shape&& shape) -> list<
       concept::column_tags<ColumnTags>(), k_array::concept::shape_<2, Shape>(),
-      decltype(match_column_extents(std::declval<ColumnTags>(),
-                                    std::declval<Shape>())){}>;
+      static_cast<bool>(decltype(match_column_extents(std::declval<ColumnTags>(),
+                                    std::declval<Shape>())){})>;
 };
 }
 
@@ -161,7 +161,7 @@ struct NumericDataFrame : Concept {
 
 template <class T>
 constexpr bool numeric_data_frame() {
-  return true;
+  return models<DETAIL_NS::NumericDataFrame, T>();
 }
 
 //------------------------------------------------------------------------------
@@ -198,8 +198,8 @@ struct HomogenousDataFrameRowShape : Concept {
   template <class ColumnTags, class Shape>
   auto require(ColumnTags&& column_tags, Shape&& shape) -> list<
       concept::column_tags<ColumnTags>(), k_array::concept::shape_<1, Shape>(),
-      decltype(match_row_extents(std::declval<ColumnTags>(),
-                                 std::declval<Shape>())){}>;
+      static_cast<bool>(decltype(match_row_extents(std::declval<ColumnTags>(),
+                                 std::declval<Shape>())){})>;
 };
 }
 

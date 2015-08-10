@@ -1,12 +1,12 @@
 #pragma once
 
 #include <echo/data_frame/homogenous_data_frame_row_fwd.h>
+#include <echo/data_frame/tag_matcher.h>
 #include <echo/data_frame/concept.h>
 #include <echo/k_array.h>
 
 namespace echo {
 namespace data_frame {
-
 //------------------------------------------------------------------------------
 // HomogenousDataFrameRow
 //------------------------------------------------------------------------------
@@ -20,12 +20,8 @@ class HomogenousDataFrameRow {
   template <class ColumnTag,
             CONCEPT_REQUIRES(concept::column_tag<ColumnTags, ColumnTag>())>
   decltype(auto) operator()(ColumnTag column_tag) const {
-    auto column_index = htl::find_if(
-        [](auto column_tag2) -> htl::integral_constant<
-            bool, std::is_same<decltype(column_tag2), ColumnTag>::value> {
-          return {};
-        },
-        ColumnTags());
+    auto column_index =
+        htl::find_if(detail::TagMatcher<ColumnTag>(), ColumnTags());
     return _k_array(column_index);
   }
 
@@ -33,12 +29,8 @@ class HomogenousDataFrameRow {
             CONCEPT_REQUIRES(concept::column_tag<ColumnTags, ColumnTag>())>
   decltype(auto) operator()(access_mode::readonly_t,
                             ColumnTag column_tag) const {
-    auto column_index = htl::find_if(
-        [](auto column_tag2) -> htl::integral_constant<
-            bool, std::is_same<decltype(column_tag2), ColumnTag>::value> {
-          return {};
-        },
-        ColumnTags());
+    auto column_index =
+        htl::find_if(detail::TagMatcher<ColumnTag>(), ColumnTags());
     return _k_array(access_mode::readonly, column_index);
   }
 

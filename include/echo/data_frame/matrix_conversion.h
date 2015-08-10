@@ -10,7 +10,7 @@ namespace data_frame {
 // to_matrix
 //------------------------------------------------------------------------------
 template <class DataFrame,
-          CONCEPT_REQUIRES(concept::numeric_data_frame<DataFrame>())>
+          CONCEPT_REQUIRES(concept::numeric_data_frame<uncvref_t<DataFrame>>())>
 auto to_matrix(DataFrame&& data_frame) {
   return numeric_array::make_numeric_array_view<
       linear_algebra::structure::matrix_general,

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <echo/data_frame/concept.h>
+#include <echo/data_frame/tag_matcher.h>
 #include <echo/k_array.h>
 
 namespace echo {
 namespace data_frame {
-
 //------------------------------------------------------------------------------
 // HomogenousDataFrameConstAccessor
 //------------------------------------------------------------------------------
@@ -17,14 +17,10 @@ struct HomogenousDataFrameConstAccessor {
                             ColumnTag column_tag) const {
     const Derived& derived = static_cast<const Derived&>(*this);
     CONTRACT_EXPECT {
-      CONTRACT_ASSERT(0 <= row_index < get_extent<0>(derived));
+      CONTRACT_ASSERT(0 <= row_index && row_index < get_extent<0>(derived));
     };
-    auto column_index = htl::find_if(
-        [](auto column_tag2) -> htl::integral_constant<
-            bool, std::is_same<decltype(column_tag2), ColumnTag>::value> {
-          return {};
-        },
-        ColumnTags());
+    auto column_index =
+        htl::find_if(detail::TagMatcher<ColumnTag>(), ColumnTags());
     return derived.k_array()(access_mode::readonly, row_index, column_index);
   }
   template <class ColumnTag,
@@ -32,14 +28,10 @@ struct HomogenousDataFrameConstAccessor {
   decltype(auto) operator()(index_t row_index, ColumnTag column_tag) const {
     const Derived& derived = static_cast<const Derived&>(*this);
     CONTRACT_EXPECT {
-      CONTRACT_ASSERT(0 <= row_index < get_extent<0>(derived));
+      CONTRACT_ASSERT(0 <= row_index && row_index < get_extent<0>(derived));
     };
-    auto column_index = htl::find_if(
-        [](auto column_tag2) -> htl::integral_constant<
-            bool, std::is_same<decltype(column_tag2), ColumnTag>::value> {
-          return {};
-        },
-        ColumnTags());
+    auto column_index =
+        htl::find_if(detail::TagMatcher<ColumnTag>(), ColumnTags());
     return derived.k_array()(row_index, column_index);
   }
 };
@@ -53,27 +45,18 @@ struct HomogenousDataFrameAccessor
   using HomogenousDataFrameConstAccessor<Derived, ColumnTags>::operator();
   template <class ColumnTag,
             CONCEPT_REQUIRES(concept::column_tag<ColumnTags, ColumnTag>())>
-  decltype(auto) operator()(access_mode::readonly_t, index_t row_index,
-                            ColumnTag column_tag) {
-    Derived& derived = static_cast<Derived&>(*this);
-    CONTRACT_EXPECT {
-      CONTRACT_ASSERT(0 <= row_index < get_extent<0>(derived));
-    };
-    return const_cast<decltype(*derived.data())>(
-        const_cast<const HomogenousDataFrameAccessor&>(*this).operator()(
-            access_mode::readonly, row_index, column_tag));
-  }
-  template <class ColumnTag,
-            CONCEPT_REQUIRES(concept::column_tag<ColumnTags, ColumnTag>())>
   decltype(auto) operator()(index_t row_index, ColumnTag column_tag) {
     Derived& derived = static_cast<Derived&>(*this);
+    const auto& const_base = static_cast<
+        const HomogenousDataFrameConstAccessor<Derived, ColumnTags>&>(*this);
     CONTRACT_EXPECT {
-      CONTRACT_ASSERT(0 <= row_index < get_extent<0>(derived));
+      CONTRACT_ASSERT(0 <= row_index && row_index < get_extent<0>(derived));
     };
     return const_cast<decltype(*derived.data())>(
-        const_cast<const HomogenousDataFrameAccessor&>(*this).operator()(
-            row_index, column_tag));
+        const_base.operator()(row_index, column_tag));
   }
 };
 }
 }
+
+#undef detail
