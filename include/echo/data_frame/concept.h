@@ -72,8 +72,8 @@ struct HomogenousDataFrameShape : Concept {
   template <class ColumnTags, class Shape>
   auto require(ColumnTags&&, Shape&& shape) -> list<
       concept::column_tags<ColumnTags>(), k_array::concept::shape_<2, Shape>(),
-      static_cast<bool>(decltype(match_column_extents(std::declval<ColumnTags>(),
-                                    std::declval<Shape>())){})>;
+      static_cast<bool>(decltype(match_column_extents(
+          std::declval<ColumnTags>(), std::declval<Shape>())){})>;
 };
 }
 
@@ -130,6 +130,22 @@ constexpr bool homogenous_data_frame() {
 }
 
 //------------------------------------------------------------------------------
+// modifiable_homogenous_data_frame_forward
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
+struct ModifiableHomogenousDataFrameForward : Concept {
+  template <class T>
+  auto require(T&& x) -> list<homogenous_data_frame<uncvref_t<T>>(),
+                              echo::concept::writable<decltype(x.data())>()>;
+};
+}
+
+template <class T>
+constexpr bool modifiable_homogenous_data_frame_forward() {
+  return models<DETAIL_NS::ModifiableHomogenousDataFrameForward, T>();
+}
+
+//------------------------------------------------------------------------------
 // contiguous_data_frame
 //------------------------------------------------------------------------------
 namespace DETAIL_NS {
@@ -162,6 +178,25 @@ struct NumericDataFrame : Concept {
 template <class T>
 constexpr bool numeric_data_frame() {
   return models<DETAIL_NS::NumericDataFrame, T>();
+}
+
+//------------------------------------------------------------------------------
+// homogenous_data_frame_convertible
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
+struct HomogenousDataFrameConvertible : Concept {
+  template <class A, class B>
+  auto require(A&& a, B&& b)
+      -> list<homogenous_data_frame<A>(), homogenous_data_frame<B>(),
+              same<typename A::column_tags, typename B::column_tags>(),
+              convertible<uncvref_t<decltype(*a.data())>,
+                          uncvref_t<decltype(*b.data())>>()>;
+};
+}
+
+template <class A, class B>
+constexpr bool homogenous_data_frame_convertible() {
+  return models<DETAIL_NS::HomogenousDataFrameConvertible, A, B>();
 }
 
 //------------------------------------------------------------------------------
@@ -199,7 +234,7 @@ struct HomogenousDataFrameRowShape : Concept {
   auto require(ColumnTags&& column_tags, Shape&& shape) -> list<
       concept::column_tags<ColumnTags>(), k_array::concept::shape_<1, Shape>(),
       static_cast<bool>(decltype(match_row_extents(std::declval<ColumnTags>(),
-                                 std::declval<Shape>())){})>;
+                                                   std::declval<Shape>())){})>;
 };
 }
 
