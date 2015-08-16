@@ -2,6 +2,7 @@
 
 #include <echo/data_frame/homogenous_data_frame.h>
 #include <echo/data_frame/homogenous_data_frame_view.h>
+#include <echo/data_frame/homogenous_data_frame_traits.h>
 #include <echo/data_frame/subdata_frame.h>
 #include <echo/data_frame/iteration.h>
 #include <echo/data_frame/subvector.h>

@@ -20,7 +20,7 @@ index_t get_num_rows(const DataFrame& data_frame) {
 //------------------------------------------------------------------------------
 template <class DataFrame,
           CONCEPT_REQUIRES(concept::homogenous_data_frame<DataFrame>())>
-index_t get_num_columns(const DataFrame& data_frame) {
+auto get_num_columns(const DataFrame& data_frame) {
   return get_extent<1>(data_frame);
 }
 
@@ -29,7 +29,7 @@ index_t get_num_columns(const DataFrame& data_frame) {
 //------------------------------------------------------------------------------
 template <class DataFrame, CONCEPT_REQUIRES(concept::homogenous_data_frame<
                                uncvref_t<DataFrame>>())>
-auto get_column(index_t j, DataFrame&& data_frame) {
+auto get_column(DataFrame&& data_frame, index_t j) {
   CONTRACT_EXPECT {
     CONTRACT_ASSERT(0 <= j && j < get_num_columns(data_frame));
   };
@@ -44,7 +44,7 @@ auto get_column(index_t j, DataFrame&& data_frame) {
 //------------------------------------------------------------------------------
 template <class DataFrame, CONCEPT_REQUIRES(concept::homogenous_data_frame<
                                uncvref_t<DataFrame>>())>
-auto get_row(index_t i, DataFrame&& data_frame) {
+auto get_row(DataFrame&& data_frame, index_t i) {
   CONTRACT_EXPECT { CONTRACT_ASSERT(0 <= i && i < get_num_rows(data_frame)); };
   auto shape = make_subshape(data_frame.shape(), i, slice::all);
   return make_homogenous_data_frame_row<

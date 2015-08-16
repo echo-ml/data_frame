@@ -129,6 +129,21 @@ constexpr bool homogenous_data_frame() {
   return homogenous_data_frame_deep<T>() || homogenous_data_frame_view<T>();
 }
 
+namespace DETAIL_NS {
+template <int K>
+struct KHomogenousDataFrame : Concept {
+  template <class T>
+  auto require(T&& x)
+      -> list<homogenous_data_frame<T>(),
+              same<decltype(get_num_columns(x)), StaticIndex<K>>()>;
+};
+}
+
+template <int K, class T>
+constexpr bool homogenous_data_frame_() {
+  return models<DETAIL_NS::KHomogenousDataFrame<K>, T>();
+}
+
 //------------------------------------------------------------------------------
 // modifiable_homogenous_data_frame_forward
 //------------------------------------------------------------------------------
