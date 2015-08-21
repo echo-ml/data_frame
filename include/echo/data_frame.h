@@ -7,11 +7,11 @@
 #include <echo/data_frame/iteration.h>
 #include <echo/data_frame/subvector.h>
 #include <echo/data_frame/matrix_conversion.h>
+#include <echo/data_frame/column_tags.h>
 
-namespace echo { 
+namespace echo {
 
 using data_frame::HomogenousDataFrame;
 using data_frame::NumericDataFrame;
 using data_frame::make_subdata_frame;
-
 }
