@@ -28,6 +28,17 @@ TEST_CASE("homogenous_data_frame") {
   CHECK(df1(1, b) == 4);
 }
 
+TEST_CASE("1-dimensional homogenous_data_frame") {
+  HomogenousDataFrame<double, htl::Tuple<A>> df1(2);
+  auto df2 = make_cview(df1);
+  df1 = {{3}, {6}};
+  CHECK(df1(0) == 3);
+  CHECK(df1(1) == 6);
+
+  CHECK(df2(0) == 3);
+  CHECK(df2(1) == 6);
+}
+
 TEST_CASE("homogenous_data_frame_view") {
   HomogenousDataFrame<double, htl::Tuple<A, B>> df1(2);
   df1(0, a) = 1;
