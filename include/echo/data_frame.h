@@ -14,4 +14,6 @@ namespace echo {
 using data_frame::HomogenousDataFrame;
 using data_frame::NumericDataFrame;
 using data_frame::make_subdata_frame;
+using data_frame::make_homogenous_data_frame;
+using data_frame::make_numeric_data_frame;
 }

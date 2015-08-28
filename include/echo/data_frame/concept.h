@@ -130,6 +130,22 @@ constexpr bool homogenous_data_frame() {
 }
 
 namespace DETAIL_NS {
+struct TypeMatchedHomogenousDataFrame : Concept {
+  template <class T, class ColumnTags, class DataFrame>
+  auto require(T&&, ColumnTags&&, DataFrame&& data_frame)
+      -> list<homogenous_data_frame<DataFrame>(),
+              same<T, uncvref_t<decltype(*data_frame.data())>>(),
+              same<ColumnTags, typename DataFrame::column_tags>()>;
+};
+}
+
+template <class T, class ColumnTags, class DataFrame>
+constexpr bool homogenous_data_frame() {
+  return models<DETAIL_NS::TypeMatchedHomogenousDataFrame, T, ColumnTags,
+                DataFrame>();
+}
+
+namespace DETAIL_NS {
 template <int K>
 struct KHomogenousDataFrame : Concept {
   template <class T>
