@@ -3,8 +3,9 @@
 #include <echo/data_frame/homogenous_data_frame_fwd.h>
 #include <echo/data_frame/homogenous_data_frame_accessor.h>
 #include <echo/data_frame/homogenous_data_frame_traits.h>
-#include <echo/data_frame/concept.h>
 #include <echo/data_frame/matrix_conversion.h>
+#include <echo/data_frame/concept.h>
+#include <echo/data_frame/subvector.h>
 #include <echo/numeric_array.h>
 #include <echo/execution_context.h>
 

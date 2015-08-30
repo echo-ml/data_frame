@@ -7,6 +7,7 @@
 #include <echo/data_frame/homogenous_data_frame_row_fwd.h>
 #include <echo/k_array.h>
 #include <echo/execution_context.h>
+#include <string>
 
 namespace echo {
 namespace data_frame {
@@ -56,6 +57,24 @@ constexpr bool column_tag() {
   using Result = decltype(
       DETAIL_NS::column_tag_impl(std::declval<Tags>(), std::declval<Tag>()));
   return Result::value;
+}
+
+//------------------------------------------------------------------------------
+// named_tag
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
+using std::to_string;
+struct NamedTag : Concept {
+  template<class Tag>
+  auto require(Tag&& tag) -> list<
+    same<std::string, decltype(to_string(tag))>()
+  >;
+};
+}
+
+template<class T>
+constexpr bool named_tag() {
+  return models<DETAIL_NS::NamedTag, T>();
 }
 
 //------------------------------------------------------------------------------

@@ -39,6 +39,18 @@ auto get_column(DataFrame&& data_frame, index_t j) {
       &data_frame.k_array()(0, j), shape);
 }
 
+template <class DataFrame, class ColumnTag,
+          CONCEPT_REQUIRES(
+              concept::homogenous_data_frame<uncvref_t<DataFrame>>() &&
+              concept::column_tag<typename uncvref_t<DataFrame>::column_tags,
+                                  ColumnTag>())>
+auto get_column(DataFrame&& data_frame, ColumnTag) {
+  using ColumnTags = typename uncvref_t<DataFrame>::column_tags;
+  auto column_index =
+      htl::find_if(detail::TagMatcher<ColumnTag>(), ColumnTags());
+  return get_column(std::forward<DataFrame>(data_frame), column_index);
+}
+
 //------------------------------------------------------------------------------
 // get_row
 //------------------------------------------------------------------------------

@@ -8,6 +8,7 @@
 #include <echo/data_frame/subvector.h>
 #include <echo/data_frame/matrix_conversion.h>
 #include <echo/data_frame/column_tags.h>
+#include <echo/data_frame/print.h>
 
 namespace echo {
 
