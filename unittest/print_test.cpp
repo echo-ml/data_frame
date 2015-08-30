@@ -15,5 +15,7 @@ TEST_CASE("print") {
   auto df1 = make_numeric_data_frame<double, Tags>(3);
   df1 = {{1,2,3}, {4,5,6}, {7,8,9}};
 
-  std::cout << df1;
+  std::ostringstream oss;
+  oss << df1;
+  CHECK(oss.str() != "");
 }

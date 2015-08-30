@@ -4,6 +4,7 @@
 #include <echo/data_frame/homogenous_data_frame_traits.h>
 #include <echo/data_frame/matrix_conversion.h>
 #include <echo/utility/ascii_table.h>
+#include <sstream>
 
 #define DETAIL_NS detail_print
 
