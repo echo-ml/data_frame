@@ -1,7 +1,7 @@
 #pragma once
 
 #include <echo/data_frame/concept.h>
-#include <echo/data_frame/tag_matcher.h>
+#include <echo/data_frame/get_column_index.h>
 #include <echo/k_array.h>
 
 namespace echo {
@@ -19,8 +19,7 @@ struct HomogenousDataFrameConstAccessor {
     CONTRACT_EXPECT {
       CONTRACT_ASSERT(0 <= row_index && row_index < get_extent<0>(derived));
     };
-    auto column_index =
-        htl::find_if(detail::TagMatcher<ColumnTag>(), ColumnTags());
+  auto column_index = get_column_index<ColumnTags, ColumnTag>();
     return derived.k_array()(access_mode::readonly, row_index, column_index);
   }
   template <class ColumnTag,
@@ -30,8 +29,7 @@ struct HomogenousDataFrameConstAccessor {
     CONTRACT_EXPECT {
       CONTRACT_ASSERT(0 <= row_index && row_index < get_extent<0>(derived));
     };
-    auto column_index =
-        htl::find_if(detail::TagMatcher<ColumnTag>(), ColumnTags());
+  auto column_index = get_column_index<ColumnTags, ColumnTag>();
     return derived.k_array()(row_index, column_index);
   }
   CONCEPT_MEMBER_REQUIRES(htl::tuple_traits::num_elements<ColumnTags>() == 1)

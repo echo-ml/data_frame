@@ -46,8 +46,7 @@ template <class DataFrame, class ColumnTag,
                                   ColumnTag>())>
 auto get_column(DataFrame&& data_frame, ColumnTag) {
   using ColumnTags = typename uncvref_t<DataFrame>::column_tags;
-  auto column_index =
-      htl::find_if(detail::TagMatcher<ColumnTag>(), ColumnTags());
+  auto column_index = get_column_index<ColumnTags, ColumnTag>();
   return get_column(std::forward<DataFrame>(data_frame), column_index);
 }
 

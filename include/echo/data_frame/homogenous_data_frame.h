@@ -68,9 +68,8 @@ auto make_homogenous_data_frame(ColumnTags, index_t num_rows,
 //------------------------------------------------------------------------------
 // NumericDataFrame
 //------------------------------------------------------------------------------
-template <class T, class ColumnTags>
-using NumericDataFrame =
-    HomogenousDataFrame<T, ColumnTags, memory::SimdAllocator<T>>;
+template <class T, class ColumnTags, class Allocator = memory::SimdAllocator<T>>
+using NumericDataFrame = HomogenousDataFrame<T, ColumnTags, Allocator>;
 
 //------------------------------------------------------------------------------
 // make_numeric_data_frame

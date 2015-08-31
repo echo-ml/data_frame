@@ -1,7 +1,7 @@
 #pragma once
 
 #include <echo/data_frame/homogenous_data_frame_row_fwd.h>
-#include <echo/data_frame/tag_matcher.h>
+#include <echo/data_frame/get_column_index.h>
 #include <echo/data_frame/concept.h>
 #include <echo/k_array.h>
 
@@ -20,8 +20,7 @@ class HomogenousDataFrameRow {
   template <class ColumnTag,
             CONCEPT_REQUIRES(concept::column_tag<ColumnTags, ColumnTag>())>
   decltype(auto) operator()(ColumnTag column_tag) const {
-    auto column_index =
-        htl::find_if(detail::TagMatcher<ColumnTag>(), ColumnTags());
+  auto column_index = get_column_index<ColumnTags, ColumnTag>();
     return _k_array(column_index);
   }
 
@@ -29,8 +28,7 @@ class HomogenousDataFrameRow {
             CONCEPT_REQUIRES(concept::column_tag<ColumnTags, ColumnTag>())>
   decltype(auto) operator()(access_mode::readonly_t,
                             ColumnTag column_tag) const {
-    auto column_index =
-        htl::find_if(detail::TagMatcher<ColumnTag>(), ColumnTags());
+  auto column_index = get_column_index<ColumnTags, ColumnTag>();
     return _k_array(access_mode::readonly, column_index);
   }
 
