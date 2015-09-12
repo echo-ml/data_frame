@@ -73,7 +73,7 @@ template <class DataFrame,
           CONCEPT_REQUIRES(
               concept::homogenous_data_frame<DataFrame>() &&
               echo::concept::printable<
-                  homogenous_data_frame_traits::value_type<DataFrame>>())>
+                uncvref_t<decltype(std::declval<DataFrame>().data())>>())>
 auto make_row(index_t row_index, const DataFrame& data_frame) {
   using ascii_table::Cell;
   using ascii_table::Row;
@@ -96,7 +96,7 @@ template <class DataFrame,
           CONCEPT_REQUIRES(
               concept::homogenous_data_frame<DataFrame>() &&
               echo::concept::printable<
-                  homogenous_data_frame_traits::value_type<DataFrame>>())>
+                uncvref_t<decltype(std::declval<DataFrame>().data())>>())>
 std::ostream& operator<<(std::ostream& out, const DataFrame& data_frame) {
   using namespace DETAIL_NS;
   using ascii_table::Row;
