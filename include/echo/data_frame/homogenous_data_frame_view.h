@@ -18,7 +18,7 @@ class HomogenousDataFrameView<Pointer, Shape, htl::Tuple<ColumnTags...>,
           HomogenousDataFrameView<Pointer, Shape, htl::Tuple<ColumnTags...>,
                                   MemoryBackendTag>,
           htl::Tuple<ColumnTags...> > {
-  using NumColumns = StaticIndex<sizeof...(ColumnTags)>;
+  using NumColumns = StaticIndex<get_num_columns<htl::Tuple<ColumnTags...>>()>;
 
  public:
   using column_tags = htl::Tuple<ColumnTags...>;

@@ -5,6 +5,7 @@
 #include <echo/data_frame/homogenous_data_frame_fwd.h>
 #include <echo/data_frame/homogenous_data_frame_view_fwd.h>
 #include <echo/data_frame/homogenous_data_frame_row_fwd.h>
+#include <echo/data_frame/column_tags.h>
 #include <echo/k_array.h>
 #include <echo/execution_context.h>
 #include <string>
@@ -13,17 +14,89 @@ namespace echo {
 namespace data_frame {
 namespace concept {
 //------------------------------------------------------------------------------
+// tag_group
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
+template<class T>
+struct tag_group_impl {
+  static constexpr bool value = false;
+};
+
+template<class Tag, std::size_t N>
+struct tag_group_impl<TagGroup<Tag, N>> {
+  static constexpr bool value = true;
+};
+}
+
+template<class T>
+constexpr bool tag_group() {
+  return DETAIL_NS::tag_group_impl<T>::value;
+}
+
+//------------------------------------------------------------------------------
+// indexed_tag
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
+template<class T>
+struct indexed_tag_impl {
+  static constexpr bool value = false;
+};
+
+template<class Tag, std::size_t I>
+struct indexed_tag_impl<IndexedTag<Tag, I>> {
+  static constexpr bool value = true;
+};
+}
+
+template<class T>
+constexpr bool indexed_tag() {
+  return DETAIL_NS::indexed_tag_impl<T>();
+}
+
+//------------------------------------------------------------------------------
+// subtag
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
+template <class Tag>
+auto subtag_impl(Tag, Tag) -> std::true_type;
+
+template <class Tag, std::size_t N, std::size_t I>
+auto subtag_impl(TagGroup<Tag, N>,
+                 IndexedTag<Tag, I>) -> std::integral_constant<bool, (I < N)>;
+
+inline auto subtag_impl(...) -> std::false_type;
+}
+
+template <class TagGroup, class Tag>
+constexpr bool subtag() {
+  using Result = decltype(
+      DETAIL_NS::subtag_impl(std::declval<TagGroup>(), std::declval<Tag>()));
+  return Result::value;
+}
+
+//------------------------------------------------------------------------------
 // column_tags
 //------------------------------------------------------------------------------
 namespace DETAIL_NS {
+template <class TagGroup1, class TagGroup2>
+struct same_tag_group {
+  static constexpr bool value = std::is_same<TagGroup1, TagGroup2>::value;
+};
+
+template <class Tag, std::size_t N, std::size_t M>
+struct same_tag_group<TagGroup<Tag, N>, TagGroup<Tag, M>> {
+  static constexpr bool value = true;
+};
+
 template <class Tag>
 constexpr int count_matches() {
   return 0;
 }
 
-template <class Tag, class TagFirst, class... TagsRest>
+template <class TagGroup, class TagGroupFirst, class... TagGroupsRest>
 constexpr int count_matches() {
-  return std::is_same<Tag, TagFirst>::value + count_matches<Tag, TagsRest...>();
+  return same_tag_group<TagGroup, TagGroupFirst>::value +
+         count_matches<TagGroup, TagGroupsRest...>();
 }
 
 template <class... Tags>
@@ -47,7 +120,7 @@ namespace DETAIL_NS {
 template <class... Tags, class Tag>
 auto column_tag_impl(htl::Tuple<Tags...>&&, Tag && ) -> std::integral_constant<
     bool, concept::column_tags<htl::Tuple<Tags...>>() &&
-              or_c<std::is_same<Tag, Tags>::value...>()>;
+              or_c<subtag<Tags, Tag>()...>()>;
 
 inline auto column_tag_impl(...) -> std::false_type;
 }
@@ -65,14 +138,13 @@ constexpr bool column_tag() {
 namespace DETAIL_NS {
 using std::to_string;
 struct NamedTag : Concept {
-  template<class Tag>
-  auto require(Tag&& tag) -> list<
-    same<std::string, decltype(to_string(tag))>()
-  >;
+  template <class Tag>
+  auto require(Tag&& tag)
+      -> list<same<std::string, decltype(to_string(tag))>()>;
 };
 }
 
-template<class T>
+template <class T>
 constexpr bool named_tag() {
   return models<DETAIL_NS::NamedTag, T>();
 }

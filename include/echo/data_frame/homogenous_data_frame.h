@@ -4,6 +4,7 @@
 #include <echo/data_frame/homogenous_data_frame_accessor.h>
 #include <echo/data_frame/homogenous_data_frame_traits.h>
 #include <echo/data_frame/matrix_conversion.h>
+#include <echo/data_frame/column_tags.h>
 #include <echo/data_frame/concept.h>
 #include <echo/data_frame/subvector.h>
 #include <echo/numeric_array.h>
@@ -20,7 +21,7 @@ class HomogenousDataFrame<T, htl::Tuple<ColumnTags...>, Allocator>
     : public HomogenousDataFrameAccessor<
           HomogenousDataFrame<T, htl::Tuple<ColumnTags...>, Allocator>,
           htl::Tuple<ColumnTags...>> {
-  using NumColumns = StaticIndex<sizeof...(ColumnTags)>;
+  using NumColumns = StaticIndex<get_num_columns<htl::Tuple<ColumnTags...>>()>;
 
  public:
   using column_tags = htl::Tuple<ColumnTags...>;

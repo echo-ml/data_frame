@@ -14,6 +14,8 @@ constexpr struct A {
 } a{};
 constexpr struct B {
 } b{};
+constexpr struct C {
+} c{};
 
 TEST_CASE("homogenous_data_frame") {
   HomogenousDataFrame<double, htl::Tuple<A, B>> df1(2);
@@ -106,4 +108,11 @@ TEST_CASE("homogenous_subdata_frame") {
   CHECK(data_frame::concept::homogenous_data_frame<decltype(df1)>());
   CHECK(data_frame::concept::homogenous_data_frame_<2, decltype(df1)>());
   CHECK(!data_frame::concept::homogenous_data_frame_<3, decltype(df1)>());
+}
+
+TEST_CASE("grouped_homogenous_data_frame") {
+  HomogenousDataFrame<double, htl::Tuple<A, TagGroup<B, 3>, C>> df1(5); 
+  std::iota(df1.data(), df1.data()+get_num_elements(df1), 0);  
+  CHECK(df1(0, indexed_tag<1>(b)) == 10);
+  CHECK(df1(0, c) == 20);
 }
